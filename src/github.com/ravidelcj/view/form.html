@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>GAT JEE FILE UPLOAD DASHBOARD</title>
+		<link rel="stylesheet" type="text/css" href="view.css" media="all">
+		<script type="text/javascript">
+			function applyClassFilter(){
+				var classNo = document.getElementById("element_1");
+				var sub = document.getElementById('firstSub');
+				var tagSelect = document.getElementById('element_5');
+				tagSelect.options.length = 0;
+				if( classNo.value >=1 && classNo.value <=3){
+					sub.textContent = "Science";
+					var phy = document.createElement("option");
+					phy.text = "phy";
+					phy.value = "phy";
+					var chem = document.createElement("option");
+					chem.text = "chem";
+					chem.value = "chem";
+					var bio = document.createElement("option");
+					bio.text = "bio";
+					bio.value = "bio";
+					var math = document.createElement("option");
+					math.text = "math";
+					math.value = "math";
+					tagSelect.add(phy);
+					tagSelect.add(chem);
+					tagSelect.add(bio);
+					tagSelect.add(math);
+				}else{
+					sub.textContent = "Computer Science";
+					var math = document.createElement("option");
+					math.text = "math";
+					math.value = "math";
+					var computer = document.createElement("option");
+					computer.text = "computer";
+					computer.value = "computer";
+					tagSelect.add(computer);
+					tagSelect.add(math);
+				}
+			}
+		</script>
+
+	</head>
+	<body id="main_body" >
+
+		<img id="top" src="top.png" alt="">
+		<div id="form_container">
+
+		<h1><a>GAT JEE FILE UPLOAD DASHBOARD</a></h1>
+		<form id="form_3494" class="appnitro" action="/getNotes" enctype="multipart/form-data" method="POST" onsubmit="return ValidateForm()">
+				<div class="form_description">
+					<h2>GAT JEE FILE UPLOAD DASHBOARD</h2>
+					<p>Upload system --- created by ravi.delcj@gmail.com (Ravi Prasad)</p>
+				</div>
+
+				<ul >
+					<li id="li_1" >
+						<label class="description" for="element_1">Class </label>
+							<div>
+								<select class="element select medium" id="element_1" name="class_no" onchange="applyClassFilter();">
+									<option value="8" >8</option>
+									<option value="9" >9</option>
+									<option value="10" >10</option>
+									<option value="11" >11</option>
+									<option value="12" >12</option>
+								</select>
+							</div>
+								<p class="guidelines" id="guide_1"><small>class 8, 9, 10, 11, 12</small></p>
+					</li>
+					<li id="li_4" >
+						<label class="description" for="element_4">Subject </label>
+							<div>
+								<select class="element select medium" id="element_4" name="subject">
+									<option value="science" id="firstSub">Science</option>
+									<option value="math" >Maths</option>
+								</select>
+							</div>
+					</li>
+					<li id="li_5" >
+						<label class="description" for="element_5">tag </label>
+							<div>
+								<select class="element select medium" id="element_5" name="tag">
+									<option value="phy" >phy</option>
+									<option value="chem" >chem</option>
+									<option value="bio" >bio</option>
+									<option value="math" >math</option>
+								</select>
+							</div>
+					</li>
+					<li id="li_2" >
+						<label class="description" for="element_2">Title </label>
+							<div>
+								<input id="element_2" name="title" class="element text medium" type="text" maxlength="255" value="" required/>
+							</div>
+					</li>
+					<li id="li_3" >
+						<label class="description" for="element_3">Upload a File </label>
+							<div>
+								<input id="element_3" name="file" class="element file" type="file" required/>
+							</div>
+					</li>
+					<li class="buttons">
+
+								<input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
+					</li>
+				</ul>
+		</form>
+		</div>
+		<img id="bottom" src="bottom.png" alt="">
+	</body>
+</html>
