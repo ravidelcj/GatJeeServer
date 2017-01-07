@@ -7,6 +7,7 @@ import (
   "net/http"
   "io"
   "os"
+  "encoding/json"
   "github.com/ravidelcj/models"
   "github.com/ravidelcj/database"
 )
@@ -79,6 +80,31 @@ func uploadNotes(res http.ResponseWriter, req *http.Request){
   }
 }
 
+//Function to check whether a user exist and if user exists it returns classno
+//Gets key :  username,  password
+//returns : name , classno
+func authLogin(res http.ResponseWriter, req *http.Request)  {
+  var user models.ClientUser
+  if req.Method != "POST" {
+    fmt.Println("Not A Post Request To Login ")
+    return
+  }
+
+  err := json.NewDecoder(req.Body).Decode(&user)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  info, exist := database.CheckUser(user)
+  if exist {
+    json.NewEncoder(res).Encode(info)
+    fmt.Println("Authentication completed for user = " + info.Name)
+  }else{
+    return
+  }
+}
+
+
 func main() {
 
   //init Database
@@ -92,6 +118,9 @@ func main() {
   http.HandleFunc("/view/", func(w http.ResponseWriter, r *http.Request) {
     http.ServeFile(w, r, r.URL.Path[1:])
   })
+
+  //loginRequests
+  http.HandleFunc("/login", authLogin)
 
   http.ListenAndServe(":9000", nil)
 }

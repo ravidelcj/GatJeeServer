@@ -44,3 +44,35 @@ func InsertData(elem models.Element, tableName string ) bool {
    }
    return true
 }
+
+func CheckUser(user models.ClientUser) (models.User, bool) {
+  var info models.User
+  exist := rowExist(user)
+   if exist {
+     query := "select * from user where username = '" + user.Username + "' AND password = '" + user.Password + "';"
+     err := Db.QueryRow(query).Scan(&info.Name, &info.Username, &info.Password, &info.Class)
+     if err != nil {
+       fmt.Println("CheckUser : ", err)
+       return info, false
+     }
+     return info, true
+   }else {
+     return info, false
+   }
+}
+
+//check whether user exist in database
+func rowExist(user models.ClientUser) bool {
+  query := "Select exists(select 1 from user where username = '" + user.Username + "' AND password = '" + user.Password + "');"
+  var exist bool
+  err := Db.QueryRow(query).Scan(&exist)
+  if err != nil {
+    fmt.Println("rowExist : ", err)
+    return false
+  }
+  if exist {
+    return true
+  }else{
+    return false
+  }
+}
