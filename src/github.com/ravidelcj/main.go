@@ -104,7 +104,26 @@ func authLogin(res http.ResponseWriter, req *http.Request)  {
   }
 }
 
+//serveuser with files
+//send path in url
+func sendFile(res http.ResponseWriter, req *http.Request)  {
+  path := req.URL.Query().Get("path")
+  name := getNameFromPath(path)
+  res.Header().Set("Content-Disposition", "attachment; filename=" + name)
+  res.Header().Set("Content-Type", "text/plain")
+  http.ServeFile(res, req, "." + path)
+}
 
+func getNameFromPath(path string) string {
+    l := len(path)
+    i := l-1
+    for path[i] != '/'  {
+      i--
+    }
+    i++
+     name := path[i:l]
+     return name
+}
 func main() {
 
   //init Database
@@ -121,6 +140,8 @@ func main() {
 
   //loginRequests
   http.HandleFunc("/login", authLogin)
+
+  http.HandleFunc("/downloadFile", sendFile)
 
   http.ListenAndServe(":9000", nil)
 }
