@@ -124,6 +124,43 @@ func getNameFromPath(path string) string {
      name := path[i:l]
      return name
 }
+
+//params
+//pageno
+//classno
+//subject
+func sendFile(res http.ResponseWriter, req *http.Request)  {
+
+  pageno := req.URL.Query().Get("pageno")
+  classno := req.URL.Query().Get("classno")
+  subject := req.URL.Query().Get("subject")
+
+  switch classno {
+  case "8": classno = "eight"
+  case "9": classno = "nine"
+  case "10": classno = "ten"
+  case "11": classno = "eleven"
+  case "12": classno = "twelve"
+  default : fmt.Println("Invalid Class No") return
+  }
+  total := databse.TotalRows(classno)
+  if total == -1 {
+    fmt.Println("Invalid operation")
+    return
+  }
+
+    if (pageno + 1)*10 <= total {
+
+      
+
+    }else if pageno*10 <=total {
+
+    }else {
+      fmt.Println("Out of Bound")
+      return
+    }
+
+}
 func main() {
 
   //init Database
@@ -142,6 +179,8 @@ func main() {
   http.HandleFunc("/login", authLogin)
 
   http.HandleFunc("/downloadFile", sendFile)
+
+  http.HandleFunc("/getFile", getFile)
 
   http.ListenAndServe(":9000", nil)
 }

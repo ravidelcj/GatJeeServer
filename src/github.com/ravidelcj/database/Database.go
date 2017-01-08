@@ -76,3 +76,14 @@ func rowExist(user models.ClientUser) bool {
     return false
   }
 }
+
+func TotalRows(classno string) int {
+  countQuery := "Select Count(*) from " + classno + ";"
+  var total int
+  err := Db.Query(countQuery).Scan(&total)
+  if err != nil {
+    fmt.Println("Error in retreiving total rows : ", err)
+    return -1
+  }
+  return total
+}

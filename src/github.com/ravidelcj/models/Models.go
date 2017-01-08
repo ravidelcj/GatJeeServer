@@ -17,8 +17,18 @@ type User struct {
 }
 
 type ClientUser struct {
-
   Username string
   Password string
+}
 
+type Value struct {
+  Title string
+  Tag string
+  Date string
+  Url string
+}
+
+type Res struct {
+  Status int
+  Values []Value
 }

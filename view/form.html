@@ -9,11 +9,6 @@
 				var classNo = document.getElementById("element_1");
 				var sub = document.getElementById('firstSub');
 				var tagSelect = document.getElementById('element_5');
-				/*for(i = 0 ; i < tagSelect.options.length  ; i++){
-					tagSelect.options[i] = null;
-				}*/
-
-				//$("#element_5").html('');
 				tagSelect.options.length = 0;
 				if( classNo.value >=1 && classNo.value <=3){
 					sub.textContent = "Science";
@@ -54,16 +49,17 @@
 		<div id="form_container">
 
 		<h1><a>GAT JEE FILE UPLOAD DASHBOARD</a></h1>
-		<form id="form_3494" class="appnitro" enctype="multipart/form-data" method="post" onsubmit="return ValidateForm()">
+		<form id="form_3494" class="appnitro" action="/getNotes" enctype="multipart/form-data" method="POST" onsubmit="return ValidateForm()">
 				<div class="form_description">
 					<h2>GAT JEE FILE UPLOAD DASHBOARD</h2>
 					<p>Upload system --- created by ravi.delcj@gmail.com (Ravi Prasad)</p>
 				</div>
+
 				<ul >
 					<li id="li_1" >
 						<label class="description" for="element_1">Class </label>
 							<div>
-								<select class="element select medium" id="element_1" name="element_1" onchange="applyClassFilter();">
+								<select class="element select medium" id="element_1" name="class_no" onchange="applyClassFilter();">
 									<option value="1" >8</option>
 									<option value="2" >9</option>
 									<option value="3" >10</option>
@@ -76,7 +72,7 @@
 					<li id="li_4" >
 						<label class="description" for="element_4">Subject </label>
 							<div>
-								<select class="element select medium" id="element_4" name="element_4">
+								<select class="element select medium" id="element_4" name="subject">
 									<option value="1" id="firstSub">Science</option>
 									<option value="2" >Maths</option>
 								</select>
@@ -85,7 +81,7 @@
 					<li id="li_5" >
 						<label class="description" for="element_5">tag </label>
 							<div>
-								<select class="element select medium" id="element_5" name="element_5">
+								<select class="element select medium" id="element_5" name="tag">
 									<option value="phy" >phy</option>
 									<option value="chem" >chem</option>
 									<option value="bio" >bio</option>
@@ -96,13 +92,13 @@
 					<li id="li_2" >
 						<label class="description" for="element_2">Title </label>
 							<div>
-								<input id="element_2" name="element_2" class="element text medium" type="text" maxlength="255" value="" required/>
+								<input id="element_2" name="title" class="element text medium" type="text" maxlength="255" value="" required/>
 							</div>
 					</li>
 					<li id="li_3" >
 						<label class="description" for="element_3">Upload a File </label>
 							<div>
-								<input id="element_3" name="element_3" class="element file" type="file" required/>
+								<input id="element_3" name="file" class="element file" type="file" required/>
 							</div>
 					</li>
 					<li class="buttons">
