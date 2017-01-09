@@ -10,6 +10,7 @@ import (
   "encoding/json"
   "github.com/ravidelcj/models"
   "github.com/ravidelcj/database"
+  "strconv"
 )
 
 const (
@@ -126,40 +127,67 @@ func getNameFromPath(path string) string {
 }
 
 //params
-//pageno
+//page
 //classno
-//subject
-func sendFile(res http.ResponseWriter, req *http.Request)  {
+func getFile(res http.ResponseWriter, req *http.Request)  {
 
-  pageno := req.URL.Query().Get("pageno")
+  page := req.URL.Query().Get("page")
   classno := req.URL.Query().Get("classno")
-  subject := req.URL.Query().Get("subject")
-
+  fmt.Println("Page : " + page + " Classno : " + classno)
+  flag := 0
   switch classno {
   case "8": classno = "eight"
   case "9": classno = "nine"
   case "10": classno = "ten"
   case "11": classno = "eleven"
   case "12": classno = "twelve"
-  default : fmt.Println("Invalid Class No") return
+  default : fmt.Println("Invalid Class No")
+            flag = 1
   }
-  total := databse.TotalRows(classno)
+  if flag == 1 {
+    return
+  }
+  total := database.TotalRows(classno)
   if total == -1 {
     fmt.Println("Invalid operation")
     return
   }
+    res.Header().Set("Content-Type","application/json")
+    pageNo, _ := strconv.Atoi(page)
 
-    if (pageno + 1)*10 <= total {
+    if (pageNo + 1) * 10 <= total {
+        result, success := database.GetRows(pageNo, classno)
+        if !success {
+          fmt.Println("Failed to retrive Row")
+          return
+        }
+        result.Status = 1
+        bRes, err := json.Marshal(result)
+        if err != nil {
+          fmt.Println("Marshal error : ", err)
+          return
+        }
+        fmt.Println(string(bRes))
+        res.Write(bRes)
+    }else if pageNo*10 <=total {
 
-      
-
-    }else if pageno*10 <=total {
-
+        result, success := database.GetRows(pageNo, classno)
+        if !success {
+          fmt.Println("Failed to retrive Row")
+          return
+        }
+        result.Status = 0
+        bRes, err := json.Marshal(result)
+        if err != nil {
+          fmt.Println("Marshal error : ", err)
+          return
+        }
+        fmt.Println(string(bRes))
+        res.Write(bRes)
     }else {
-      fmt.Println("Out of Bound")
-      return
+        fmt.Println("Out of Bound")
+        return
     }
-
 }
 func main() {
 
@@ -170,16 +198,19 @@ func main() {
   //handling Form Data from client
   http.HandleFunc("/getNotes", uploadNotes)
 
-  //Sends Form file to client
+  //Sends Form file to client GET
+  ///view/
   http.HandleFunc("/view/", func(w http.ResponseWriter, r *http.Request) {
     http.ServeFile(w, r, r.URL.Path[1:])
   })
 
-  //loginRequests
+  //loginRequests POST
+  ///login
   http.HandleFunc("/login", authLogin)
 
   http.HandleFunc("/downloadFile", sendFile)
 
+  // /getFile?page=0&classno=8
   http.HandleFunc("/getFile", getFile)
 
   http.ListenAndServe(":9000", nil)

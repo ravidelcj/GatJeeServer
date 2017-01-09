@@ -6,7 +6,7 @@ import(
   _ "github.com/go-sql-driver/mysql"
   "github.com/ravidelcj/models"
   "database/sql"
-
+  "strconv"
 )
 
 //Global database variable
@@ -80,10 +80,35 @@ func rowExist(user models.ClientUser) bool {
 func TotalRows(classno string) int {
   countQuery := "Select Count(*) from " + classno + ";"
   var total int
-  err := Db.Query(countQuery).Scan(&total)
+  err := Db.QueryRow(countQuery).Scan(&total)
   if err != nil {
     fmt.Println("Error in retreiving total rows : ", err)
     return -1
   }
   return total
+}
+
+func GetRows(page int, classno string) (models.Res, bool) {
+  page*=10
+  query := "Select tag, date, title, url from " + classno + " order by id desc limit " + strconv.Itoa(page) + ", 10 ;"
+  var res models.Res
+  rows, err := Db.Query(query)
+  if err != nil {
+    fmt.Println("Error in GetRows Query : ",err )
+    return res, false
+  }
+  defer rows.Close()
+
+  var values []models.Value
+  for rows.Next() {
+    var singleRow models.Value
+    err := rows.Scan(&singleRow.Tag, &singleRow.Date, &singleRow.Title, &singleRow.Url)
+    if err != nil {
+      fmt.Println("Error in retrieving Row : ", err)
+      return res, false
+    }
+    values = append(values, singleRow)
+  }
+  res.Values = values
+  return res, true
 }

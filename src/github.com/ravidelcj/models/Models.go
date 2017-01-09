@@ -30,5 +30,5 @@ type Value struct {
 
 type Res struct {
   Status int
-  Values []Value
+  Values []Value 
 }
