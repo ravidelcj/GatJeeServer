@@ -1,0 +1,188 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+//fast power
+long long fast_pow(int a,int n)
+{
+    long long result = 1;
+    long long power = n;
+    long long value = a;
+    while(power>0)
+    {
+        if(power&1)
+            {result = result*value;
+            result = result%1000000007;}
+        value = value*value;
+        value = value%1000000007;
+        power /= 2;
+        //power >>= 1;
+    }
+    return result;
+}
+
+//check whether a string is valid
+pair<bool,string> check(string a, string b){
+    string res ="";
+
+    for(int i=0;i<a.length();i++){
+        if(i==a.length()-1){
+            res+="1";
+        }else{
+            if(a[i]=='2'&&b[i]=='2'){
+                if(a[i+1]!='2'||b[i+1]!='2'){
+                    return make_pair(false,"");
+                }else{
+                    res+="2";
+                    res+="2";
+                    i++;
+                }
+            }else if(a[i]=='1'&&b[i]=='1'){
+                res+="1";
+            }else{
+                if((a[i+1]=='1'&&b[i+1]=='2')||(a[i+1]=='2'&&b[i+1]=='1')){
+                    res+="2";
+                    res+="2";
+                    i++;
+                }else{
+                    return make_pair(false, "");
+                }
+            }
+        }
+    }
+    return make_pair(true,res);
+}
+
+bool isGood(string res){
+
+    int l = res.length();
+    for(int i=0;i<res.length();i++){
+        if(i==(l-1)){
+            return true;
+        }
+
+        if(res[i]=='1')
+          continue;
+
+        if(res[i]=='2'){
+            if((i+3)==l-1){
+                if(res[i+1]=='2'&&res[i+2]=='1'){
+                        return true;
+                }else{
+                    return false;
+                }
+            }else if((i+3)<l-1){
+                if(res[i+1]=='2'&&res[i+2]=='1'){
+                    i+=2;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }
+    }
+}
+
+
+long long countSet(string a, string b){
+
+    long long count21=0,countEqual=0,countGood=0;
+
+    int l =a.length();
+
+    for(int i=0;i<l;i++){
+
+        if(i==l-1){
+            countEqual++;
+            break;
+        }
+        if((a[i]=='2'&&b[i]=='2')||a[i]=='1'&&b[i]=='1'){
+            countEqual++;
+            continue;
+        }
+        if((a[i]=='1'&&b[i]=='2')){
+            if(a[i+1]=='1'&&b[i+1]=='2'){
+                countGood++;
+                //i++;
+            }else{
+                count21++;
+                //i++;
+            }
+            i++;
+            continue;
+        }
+        if((a[i]=='2'&&b[i]=='1')){
+            if(a[i+1]=='2'&&b[i+1]=='1'){
+                countGood++;
+                //i++;
+            }else{
+                count21++;
+                //i++;
+            }
+            i++;//
+            continue;
+        }
+    }
+   // cout<<"count21 : "<<count21<<endl;
+   // cout<<"countEqual : "<<countEqual<<endl;
+   // cout<<"countGood : "<<countGood<<endl;
+    long long y=fast_pow(2,count21);
+    long long z=fast_pow(2,countEqual+countGood);
+    y%=1000000007;
+    z%=1000000007;
+    return ((y*z)%1000000007);
+}
+
+void bothGood(string a, string b){
+    int l=a.length();
+
+    long long counter=0;
+
+    for(int i=0;i<l;i++){
+        if((a[i]=='1'&&b[i]=='1')||(a[i]=='2'&&b[i]=='2'))
+           counter++;
+    }
+    printf("%lld\n",fast_pow(2,counter));
+}
+
+int main(){
+
+    ios_base::sync_with_stdio(false);
+    int t;
+    cin>>t;
+    while(t--){
+        string first;
+        string second;
+
+        cin>>first>>second;
+        int l=first.length();
+        pair<bool,string> ans=check(first, second);
+        bool goodFirst=isGood(first);
+        bool goodSecond=isGood(second);
+        cout<<goodFirst<<" "<<goodSecond<<endl;
+        if(goodFirst&&goodSecond&&!ans.first){
+            bothGood(first,second);
+            continue;
+        }
+
+        if((goodFirst&&!goodSecond)||(!goodFirst&&goodSecond)){
+            printf("0\n");
+            continue;
+        }
+
+        if(ans.first){
+
+            string res=ans.second;
+            if(isGood(res)){
+                long long counter = countSet(first,second);
+                printf("%lld\n",counter);
+            }else{
+                printf("0\n");
+            }
+        }else{
+            printf("0\n");
+        }
+    }
+    return 0;
+}

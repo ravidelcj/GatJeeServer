@@ -92,6 +92,7 @@ func authLogin(res http.ResponseWriter, req *http.Request)  {
   }
 
   err := json.NewDecoder(req.Body).Decode(&user)
+
   if err != nil {
     fmt.Println(err)
     return

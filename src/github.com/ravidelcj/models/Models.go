@@ -17,7 +17,7 @@ type User struct {
 }
 
 type ClientUser struct {
-  Username string
+  Username string `json:,string`
   Password string
 }
 
@@ -30,5 +30,5 @@ type Value struct {
 
 type Res struct {
   Status int
-  Values []Value 
+  Values []Value
 }

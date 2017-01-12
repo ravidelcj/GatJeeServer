@@ -1,0 +1,86 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+
+     ios_base::sync_with_stdio(false);
+     cin.tie(NULL);
+     int n,m;
+     //scanf("%d%d",&n,&m);
+     cin>>n>>m;
+     vector<long long> s1,s2;
+     string str;
+     for(int i=0;i<n;i++){
+        cin>>str;
+        int l=str.length();
+        int flag=0;
+        vector<int> check;
+        check.resize(26);
+     //   cout<<check[23]<<endl;
+        for(int j=0;j<l&&flag!=26;j++){
+            if(check[str[j]-'A']==0){
+                check[str[j]-'A']=1;
+                flag++;
+            }
+        }
+        if(flag==26){
+            s1.push_back(67108863);
+        }{
+            long long x=0;
+            for(int j=0;j<=25;j++){
+                if(check[j]){
+                        x+=(1<<j);
+                }
+            }
+           // cout<<x<<endl;
+            s1.push_back(x);
+        }
+
+     }
+     for(int i=0;i<m;i++){
+        cin>>str;
+        int l=str.length();
+        int flag=0;
+        vector<int> check;
+        check.resize(26);
+        for(int j=0;j<l&&flag!=26;j++){
+            if(check[str[j]-'A']==0){
+                check[str[j]-'A']=1;
+                flag++;
+            }
+        }
+        if(flag==26){
+            s1.push_back(67108863);
+        }{
+            long long x=0;
+            for(int j=0;j<=25;j++){
+                if(check[j]){
+                        x+=(1<<j);
+                }
+            }
+            s2.push_back(x);
+        }
+
+     }
+
+
+     int l1=s1.size();
+     int l2=s2.size();
+        long long ans=0;
+     for(int i=0;i<l1;i++){
+        if(s1[i]==67108863){
+            ans+=l2;
+            continue;
+        }
+        for(int j=0;j<l2;j++){
+            //cout<<(s1[i]|s2[j])<<endl;
+            if((s1[i]|s2[j])==67108863)
+               ans++;
+        }
+
+     }
+     printf("%lld",ans);
+    return 0;
+
+}
