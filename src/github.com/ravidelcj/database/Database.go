@@ -47,16 +47,18 @@ func InsertData(elem models.Element, tableName string ) bool {
 
 func CheckUser(user models.ClientUser) (models.User, bool) {
   var info models.User
+  info.Status = "1"
   exist := rowExist(user)
    if exist {
      query := "select * from user where username = '" + user.Username + "' AND password = '" + user.Password + "';"
-     err := Db.QueryRow(query).Scan(&info.Name, &info.Username, &info.Password, &info.Class)
+     err := Db.QueryRow(query).Scan(&info.Name, &info.Username, &info.Password, &info.Class, &info.LastName)
      if err != nil {
        fmt.Println("CheckUser : ", err)
        return info, false
      }
      return info, true
    }else {
+     info.Status = "0"
      return info, false
    }
 }
@@ -89,7 +91,7 @@ func TotalRows(classno string) int {
 }
 
 func GetRows(page int, classno string) (models.Res, bool) {
-  page*=10
+  page *= 10
   query := "Select tag, date, title, url from " + classno + " order by id desc limit " + strconv.Itoa(page) + ", 10 ;"
   var res models.Res
   rows, err := Db.Query(query)
@@ -109,6 +111,7 @@ func GetRows(page int, classno string) (models.Res, bool) {
     }
     values = append(values, singleRow)
   }
+  fmt.Println(values)
   res.Values = values
   return res, true
 }

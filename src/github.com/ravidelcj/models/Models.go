@@ -10,10 +10,12 @@ type Element struct{
 }
 
 type User struct {
+  Status string
   Name string
   Username string
   Password string
   Class string
+  LastName string
 }
 
 type ClientUser struct {

@@ -93,8 +93,10 @@ func authLogin(res http.ResponseWriter, req *http.Request)  {
 
   err := json.NewDecoder(req.Body).Decode(&user)
 
+  var infoPre = models.User{ Status : "0"}
   if err != nil {
     fmt.Println(err)
+    json.NewEncoder(res).Encode(infoPre)
     return
   }
   info, exist := database.CheckUser(user)
@@ -102,6 +104,7 @@ func authLogin(res http.ResponseWriter, req *http.Request)  {
     json.NewEncoder(res).Encode(info)
     fmt.Println("Authentication completed for user = " + info.Name)
   }else{
+    json.NewEncoder(res).Encode(info)
     return
   }
 }
