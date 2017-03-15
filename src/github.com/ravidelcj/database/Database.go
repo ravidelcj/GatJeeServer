@@ -115,3 +115,17 @@ func GetRows(page int, classno string) (models.Res, bool) {
   res.Values = values
   return res, true
 }
+
+func AddUser(elem models.RegisterUser) bool {
+  stmt, err := Db.Prepare("Insert user SET name = ? , username = ? , password = ? , class = ? , last_name = ? ")
+  if err != nil {
+    fmt.Println("Error Preparing Statement : ", err)
+    return false
+  }
+  _, err1 := stmt.Exec(elem.FirstName, elem.Username, elem.Password, elem.ClassNo, elem.LastName)
+  if err1 != nil {
+    fmt.Println("Error Inserting into table : ", err)
+    return false
+  }
+  return true
+}

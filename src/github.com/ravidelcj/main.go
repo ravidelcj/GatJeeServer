@@ -14,12 +14,22 @@ import (
 )
 
 const (
+
+  //upload Notes http name attributes
   Class_No string = "class_no"
   Subject string = "subject"
   Tag string = "tag"
   Title string = "title"
   File string = "file"
+
+  //register user http name attributes
+  FirstNameForm string = "e_first_name"
+  LastNameForm string = "e_last_name"
+  UsernameForm string = "e_username"
+  PasswordForm string = "e_password"
+  ClassNoForm string = "e_class_no"
 )
+
 //handles uploading of file
 func uploadNotes(res http.ResponseWriter, req *http.Request){
   fmt.Println("Request Method : ", req.Method)
@@ -51,7 +61,14 @@ func uploadNotes(res http.ResponseWriter, req *http.Request){
   fmt.Println("title", formElem.Title)
   fmt.Println("date", formElem.Date)
 
-  urlPath := "/files/" + formElem.Class + "/" + formElem.Title + ".pdf"
+  urlPath := "/files/" + formElem.Class + "/"
+  switch formElem.Tag {
+      case "phy"      : urlPath = urlPath + "physics/" + formElem.Title + ".pdf"
+      case "chem"     : urlPath = urlPath + "chemistry/" + formElem.Title + ".pdf"
+      case "bio"      : urlPath = urlPath + "bio/" + formElem.Title + ".pdf"
+      case "math"     : urlPath = urlPath + "maths/" + formElem.Title + ".pdf"
+      case "computer" : urlPath = urlPath + "comp/" + formElem.Title + ".pdf"
+  }
   path := "." + urlPath
 
   out, err := os.Create(path)
@@ -68,17 +85,25 @@ func uploadNotes(res http.ResponseWriter, req *http.Request){
   }
   var tableName string
   switch formElem.Class {
-    case "8": tableName = "eight"
-    case "9": tableName = "nine"
-    case "10": tableName = "ten"
-    case "11": tableName = "eleven"
-    case "12": tableName = "twelve"
+    case "8"  : tableName = "eight"
+    case "9"  : tableName = "nine"
+    case "10" : tableName = "ten"
+    case "11" : tableName = "eleven"
+    case "12" : tableName = "twelve"
+  }
+  switch formElem.Tag {
+      case "phy"      : tableName = tableName + "_physics"
+      case "chem"     : tableName = tableName + "_chemistry"
+      case "bio"      : tableName = tableName + "_bio"
+      case "math"     : tableName = tableName + "_maths"
+      case "computer" : tableName = tableName + "_comps"
   }
   formElem.Url = urlPath
   success := database.InsertData(formElem, tableName)
   if !success {
     fmt.Println("Error while inserting to database")
   }
+  http.Redirect(res, req, "/view/upload.html", http.StatusMovedPermanently)
 }
 
 //Function to check whether a user exist and if user exists it returns classno
@@ -126,17 +151,19 @@ func getNameFromPath(path string) string {
       i--
     }
     i++
-     name := path[i:l]
-     return name
+    name := path[i:l]
+    return name
 }
 
 //params
 //page
 //classno
+//sub
 func getFile(res http.ResponseWriter, req *http.Request)  {
 
   page := req.URL.Query().Get("page")
   classno := req.URL.Query().Get("classno")
+  sub := req.URL.Query().Get("sub")
   fmt.Println("Page : " + page + " Classno : " + classno)
   flag := 0
   switch classno {
@@ -151,6 +178,7 @@ func getFile(res http.ResponseWriter, req *http.Request)  {
   if flag == 1 {
     return
   }
+  classno = classno + "_" + sub
   total := database.TotalRows(classno)
   if total == -1 {
     fmt.Println("Invalid operation")
@@ -193,15 +221,51 @@ func getFile(res http.ResponseWriter, req *http.Request)  {
         return
     }
 }
+
+func registerUser(res http.ResponseWriter, req *http.Request){
+  if req.Method != "POST" {
+    fmt.Println("Registeration router getting non Post request")
+    return
+  }
+
+  err := req.ParseMultipartForm(32 << 20)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+
+  var user models.RegisterUser
+  user.FirstName = req.FormValue(FirstNameForm)
+  user.LastName = req.FormValue(LastNameForm)
+  user.Username = req.FormValue(UsernameForm)
+  user.Password = req.FormValue(PasswordForm)
+  user.ClassNo = req.FormValue(ClassNoForm)
+
+  succ := database.AddUser(user)
+
+  if !succ {
+    fmt.Println("Error registering user")
+  }
+  fmt.Println(user.FirstName + " Registered Successfully")
+  http.Redirect(res, req, "/view/RegisterForm.html", http.StatusMovedPermanently)
+}
 func main() {
 
-  //init Database
+  //initialising Database
   database.InitDatabase()
   defer database.Db.Close()
 
+  //Post Request from upload.html
   //handling Form Data from client
+  //Uploads notes to the server and add entry to the database
   http.HandleFunc("/getNotes", uploadNotes)
 
+  //POST request by RegisterForm.html
+  //register users to the database
+  //mysql table name user
+  http.HandleFunc("/registerUser", registerUser)
+
+  //GET request by admin to access view/RegisterForm.html and view/upload.html
   //Sends Form file to client GET
   ///view/
   http.HandleFunc("/view/", func(w http.ResponseWriter, r *http.Request) {
@@ -212,9 +276,10 @@ func main() {
   ///login
   http.HandleFunc("/login", authLogin)
 
+
   http.HandleFunc("/downloadFile", sendFile)
 
-  // /getFile?page=0&classno=8
+  // /getFile?page=0&classno=8&sub=physics
   http.HandleFunc("/getFile", getFile)
 
   http.ListenAndServe(":9000", nil)

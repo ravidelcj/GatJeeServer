@@ -34,3 +34,11 @@ type Res struct {
   Status int
   Values []Value
 }
+
+type RegisterUser struct{
+  FirstName string
+  LastName string
+  Username string
+  Password string
+  ClassNo string
+}
