@@ -11,6 +11,7 @@ import (
   "github.com/ravidelcj/models"
   "github.com/ravidelcj/database"
   "strconv"
+  "strings"
 )
 
 const (
@@ -62,12 +63,14 @@ func uploadNotes(res http.ResponseWriter, req *http.Request){
   fmt.Println("date", formElem.Date)
 
   urlPath := "/files/" + formElem.Class + "/"
+
+  validName := strings.Replace(formElem.Title, " ", "_", -1)
   switch formElem.Tag {
-      case "phy"      : urlPath = urlPath + "physics/" + formElem.Title + ".pdf"
-      case "chem"     : urlPath = urlPath + "chemistry/" + formElem.Title + ".pdf"
-      case "bio"      : urlPath = urlPath + "bio/" + formElem.Title + ".pdf"
-      case "math"     : urlPath = urlPath + "maths/" + formElem.Title + ".pdf"
-      case "computer" : urlPath = urlPath + "comp/" + formElem.Title + ".pdf"
+      case "phy"      : urlPath = urlPath + "physics/" + validName + ".pdf"
+      case "chem"     : urlPath = urlPath + "chemistry/" + validName + ".pdf"
+      case "bio"      : urlPath = urlPath + "bio/" + validName + ".pdf"
+      case "math"     : urlPath = urlPath + "maths/" + validName + ".pdf"
+      case "computer" : urlPath = urlPath + "comp/" + validName + ".pdf"
   }
   path := "." + urlPath
 
